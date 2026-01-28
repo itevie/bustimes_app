@@ -19,10 +19,14 @@ class _LiveriesPageState extends State<LiveriesPage> {
   Widget build(BuildContext context) {
     final viewWidget = ViewList<Livery>(
       name: "liveries",
+      allowGrid: true,
       loadData: (refresh, query) async => Livery.getAllApi(force: refresh),
       itemBuilder:
-          (livery) =>
-              LiveryWidget(key: Key(livery.id.toString()), livery: livery),
+          (livery, details) => LiveryWidget(
+            key: Key(livery.id.toString()),
+            livery: livery,
+            isGrid: details.isGrid,
+          ),
       preSearch: widget.preSearch,
       note:
           !Platform.isAndroid

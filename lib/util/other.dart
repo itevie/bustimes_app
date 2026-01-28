@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> openUrl(String url) async {
@@ -8,4 +10,8 @@ Future<void> openUrl(String url) async {
   } else {
     throw 'Could not launch $url';
   }
+}
+
+void navigate(BuildContext context, Widget widget) {
+  Navigator.of(context).push(MaterialPageRoute(builder: (context) => widget));
 }

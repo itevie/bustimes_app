@@ -18,7 +18,8 @@ class _VehicleTypesPageState extends State<VehicleTypesPage> {
     final viewWidget = ViewList<VehicleType>(
       name: "vehicle types",
       loadData: (refresh, query) async => VehicleType.getAllApi(force: refresh),
-      itemBuilder: (vehicleType) => VehicleTypeWidget(vehicleType: vehicleType),
+      itemBuilder:
+          (vehicleType, _) => VehicleTypeWidget(vehicleType: vehicleType),
       preSearch: widget.preSearch,
     );
     return widget.isPage

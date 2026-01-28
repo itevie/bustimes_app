@@ -34,7 +34,7 @@ class ChecklistPresetsPageState extends State<ChecklistPresetsPage> {
           "A preset will add all services from the listed operators.",
         ),
         loadData: (refresh, query) async => checklistPresets,
-        itemBuilder: (list) {
+        itemBuilder: (list, _) {
           return MyCard(
             onTap: () {
               Navigator.of(context).push(

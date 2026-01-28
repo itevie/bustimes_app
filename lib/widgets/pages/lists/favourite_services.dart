@@ -19,7 +19,7 @@ class _FavouriteServicesPageState extends State<FavouriteServicesPage> {
       body: ViewList<Service>(
         name: "favourite services",
         loadData: (refresh, query) async => FavouriteService.getAllAsObject(),
-        itemBuilder: (service) => ServiceWidget(service: service),
+        itemBuilder: (service, _) => ServiceWidget(service: service),
       ),
     );
   }

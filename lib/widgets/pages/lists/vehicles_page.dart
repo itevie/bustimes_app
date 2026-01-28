@@ -73,7 +73,7 @@ class _VehiclesPageState extends State<VehiclesPage> {
             ),
           };
         },
-        itemBuilder: (vehicle) => VehicleWidget(vehicle: vehicle),
+        itemBuilder: (vehicle, _) => VehicleWidget(vehicle: vehicle),
       ),
     );
   }

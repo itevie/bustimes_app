@@ -1,0 +1,7 @@
+- Add fetching vehicle jounreys 
+- Show vehicles by feting vehicle jounreys
+- On the trips fetch the vehicle journey on the map
+- Remember grid views
+- Show recent network reuests
+- Redirect to ui from map settings
+- Operator from service

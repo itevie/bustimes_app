@@ -21,7 +21,7 @@ class _OperatorsPageState extends State<OperatorsPage> {
         return Operator.getAllApi(refresh: refresh);
       },
       preSearch: widget.preSearch,
-      itemBuilder: (operator) => OperatorWidget(operator: operator),
+      itemBuilder: (operator, _) => OperatorWidget(operator: operator),
     );
     return widget.isPage
         ? Scaffold(appBar: AppBar(title: Text("Operators")), body: viewWidget)

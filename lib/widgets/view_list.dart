@@ -3,15 +3,18 @@ import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/util/query.dart';
 import 'package:route_log/widgets/prompts/confirm.dart';
 
+typedef ItemBuilderDetails = ({bool isGrid});
+
 class ViewList<T extends BaseModel> extends StatefulWidget {
   final Future<List<T>> Function(bool refresh, Map<String, dynamic> query)
   loadData;
-  final Widget Function(T item) itemBuilder;
+  final Widget Function(T item, ItemBuilderDetails options) itemBuilder;
   final String? queryGroup;
   final Widget? note;
   final String? preSearch;
   final Map<String, dynamic>? fullSearch;
   final String name;
+  final bool allowGrid;
 
   const ViewList({
     super.key,
@@ -22,6 +25,7 @@ class ViewList<T extends BaseModel> extends StatefulWidget {
     this.note,
     this.fullSearch,
     this.preSearch,
+    this.allowGrid = false,
   });
 
   @override
@@ -32,6 +36,7 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
   late Future<List<T>> _future;
   late TextEditingController _controller;
   Map<String, dynamic> query = {};
+  bool isGrid = false;
 
   @override
   void initState() {
@@ -143,6 +148,18 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                       return Text("${count.length} results");
                     },
                   ),
+
+                  if (widget.allowGrid) ...[
+                    const Expanded(child: SizedBox()),
+                    Switch(
+                      value: isGrid,
+                      onChanged: (v) {
+                        setState(() {
+                          isGrid = v;
+                        });
+                      },
+                    ),
+                  ],
                 ],
               ),
             ],
@@ -183,12 +200,29 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
               } else {
                 final items = snapshot.data!;
 
-                return ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return widget.itemBuilder(items[index]);
-                  },
-                );
+                if (isGrid) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 0,
+                          mainAxisSpacing: 0,
+                          childAspectRatio: 1,
+                        ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return widget.itemBuilder(items[index], (isGrid: true));
+                    },
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return widget.itemBuilder(items[index], (isGrid: false));
+                    },
+                  );
+                }
               }
             },
           ),

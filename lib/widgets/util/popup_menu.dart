@@ -4,8 +4,9 @@ typedef PopupMenuItemC = ({String name, IconData icon, VoidCallback callback});
 
 class PopupMenu extends StatelessWidget {
   final List<PopupMenuItemC> items;
+  final Widget? child;
 
-  const PopupMenu({super.key, required this.items});
+  const PopupMenu({super.key, required this.items, this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class PopupMenu extends StatelessWidget {
                   )
                   .toList(),
       tooltip: '',
-      child: const Icon(Icons.more_vert),
+      child: child ?? const Icon(Icons.more_vert),
     );
   }
 }

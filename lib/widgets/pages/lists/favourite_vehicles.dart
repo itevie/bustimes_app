@@ -19,7 +19,7 @@ class _FavouriteVehiclesPageState extends State<FavouriteVehiclesPage> {
       body: ViewList<Vehicle>(
         name: "favourite vehicles",
         loadData: (refresh, query) async => FavouriteVehicles.getAllAsObject(),
-        itemBuilder: (vehicle) => VehicleWidget(vehicle: vehicle),
+        itemBuilder: (vehicle, _) => VehicleWidget(vehicle: vehicle),
       ),
     );
   }

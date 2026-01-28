@@ -45,6 +45,7 @@ class _ServicePageState extends State<ServicePage> {
         name: "services",
         preSearch: widget.preSearch,
         fullSearch: widget.fullSearch,
+        allowGrid: true,
         loadData: (refresh, query) async {
           return switch (widget.search) {
             OperatorServices(:final operator) => operator.getServices(
@@ -58,7 +59,9 @@ class _ServicePageState extends State<ServicePage> {
           };
         },
         queryGroup: 'service',
-        itemBuilder: (service) => ServiceWidget(service: service),
+        itemBuilder:
+            (service, options) =>
+                ServiceWidget(service: service, isGrid: options.isGrid),
       ),
     );
   }

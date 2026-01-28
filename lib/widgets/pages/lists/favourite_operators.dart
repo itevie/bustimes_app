@@ -19,7 +19,7 @@ class _FavouriteOperatorsPageState extends State<FavouriteOperatorsPage> {
       body: ViewList<Operator>(
         name: "favourite operators",
         loadData: (refresh, query) async => FavouriteOperator.getAllAsObject(),
-        itemBuilder: (operator) => OperatorWidget(operator: operator),
+        itemBuilder: (operator, _) => OperatorWidget(operator: operator),
       ),
     );
   }

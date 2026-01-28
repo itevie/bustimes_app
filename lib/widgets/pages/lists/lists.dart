@@ -34,7 +34,7 @@ class ListsPageState extends State<ListsPage> {
       key: _key,
       name: 'checklists',
       loadData: (refresh, query) async => lists,
-      itemBuilder: (list) {
+      itemBuilder: (list, _) {
         return ListWidget(key: Key(list.id.toString()), list: list);
       },
     );
