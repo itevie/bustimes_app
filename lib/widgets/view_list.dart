@@ -35,21 +35,25 @@ class ViewList<T extends BaseModel> extends StatefulWidget {
 class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
   late Future<List<T>> _future;
   late TextEditingController _controller;
+
   Map<String, dynamic> query = {};
   bool isGrid = false;
+
+  int page = 0;
+  static const int pageSize = 50;
 
   @override
   void initState() {
     super.initState();
-    _loadOperators();
 
     _controller = TextEditingController(text: widget.preSearch ?? '');
+    query["search"] = widget.preSearch;
 
     if (widget.fullSearch != null) {
-      query = widget.fullSearch!;
-      _refresh();
+      query = {...query, ...widget.fullSearch!};
     }
-    query["search"] = widget.preSearch;
+
+    _future = widget.loadData(false, query);
   }
 
   @override
@@ -60,19 +64,16 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
 
   void _refresh({bool fullRefresh = true}) {
     setState(() {
+      page = 0;
       _future = widget.loadData(fullRefresh, query);
     });
-  }
-
-  void _loadOperators() {
-    _future = widget.loadData(false, query);
   }
 
   void reloadData() async {
     final result = await showConfirmPrompt(
       context,
-      Text("Reload All Data?"),
-      Text(
+      const Text("Reload All Data?"),
+      const Text(
         "Are you sure you want to fetch all data from the bustimes website?",
       ),
     );
@@ -98,16 +99,15 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                   ),
                   isDense: true,
                 ),
-                onChanged:
-                    (value) => {
-                      setState(() {
-                        query["search"] = value;
-                        _refresh(fullRefresh: false);
-                      }),
-                    },
+                onChanged: (value) {
+                  setState(() {
+                    query["search"] = value;
+                    page = 0;
+                    _refresh(fullRefresh: false);
+                  });
+                },
               ),
               const SizedBox(height: 8),
-
               Row(
                 children: [
                   if (widget.queryGroup != null) ...[
@@ -122,6 +122,7 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
 
                         setState(() {
                           query = {'search': query["search"], ...result};
+                          page = 0;
                           _refresh(fullRefresh: false);
                         });
                       },
@@ -131,33 +132,24 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                     const SizedBox(width: 8),
                   ],
                   OutlinedButton.icon(
-                    onPressed: () => reloadData(),
+                    onPressed: reloadData,
                     icon: const Icon(Icons.refresh),
                     label: const Text('Refresh'),
                   ),
-
                   const SizedBox(width: 8),
-
                   FutureBuilder<List<T>>(
                     future: _future,
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData) return Text("0 results");
-
+                      if (!snapshot.hasData) return const Text("0 results");
                       final count = queryViaObjectQuery(snapshot.data!, query);
-
                       return Text("${count.length} results");
                     },
                   ),
-
                   if (widget.allowGrid) ...[
                     const Expanded(child: SizedBox()),
                     Switch(
                       value: isGrid,
-                      onChanged: (v) {
-                        setState(() {
-                          isGrid = v;
-                        });
-                      },
+                      onChanged: (v) => setState(() => isGrid = v),
                     ),
                   ],
                 ],
@@ -165,65 +157,116 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
             ],
           ),
         ),
-
         if (widget.note != null) ...[widget.note!, const SizedBox(height: 8)],
-
         const Divider(height: 1),
-
         Expanded(
-          child: FutureBuilder(
-            future: _future.then((values) {
-              return queryViaObjectQuery(values, query);
-            }),
-
+          child: FutureBuilder<List<T>>(
+            future: _future.then(
+              (values) => queryViaObjectQuery(values, query),
+            ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                print('Stack trace: ${snapshot.stackTrace}');
+              }
+
+              if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('No items found.'),
+                      const Text('No items found.'),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
-                        onPressed: () => reloadData(),
+                        onPressed: reloadData,
                         icon: const Icon(Icons.refresh),
                         label: const Text('Load Data'),
                       ),
                     ],
                   ),
                 );
-              } else {
-                final items = snapshot.data!;
-
-                if (isGrid) {
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 0,
-                          mainAxisSpacing: 0,
-                          childAspectRatio: 1,
-                        ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return widget.itemBuilder(items[index], (isGrid: true));
-                    },
-                  );
-                } else {
-                  return ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return widget.itemBuilder(items[index], (isGrid: false));
-                    },
-                  );
-                }
               }
+
+              final allItems = snapshot.data!;
+              final totalPages = (allItems.length / pageSize).ceil().clamp(
+                1,
+                9999,
+              );
+
+              final start = page * pageSize;
+              final end = (start + pageSize).clamp(0, allItems.length);
+              final items = allItems.sublist(start, end);
+
+              return Column(
+                children: [
+                  Expanded(
+                    child:
+                        isGrid
+                            ? GridView.builder(
+                              padding: const EdgeInsets.all(8),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 4,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                return widget.itemBuilder(items[index], (
+                                  isGrid: true,
+                                ));
+                              },
+                            )
+                            : ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                return widget.itemBuilder(items[index], (
+                                  isGrid: false,
+                                ));
+                              },
+                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.first_page),
+                          onPressed:
+                              page != 0 ? () => setState(() => page = 0) : null,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed:
+                              page > 0 ? () => setState(() => page--) : null,
+                        ),
+                        Text("Page ${page + 1} / $totalPages"),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed:
+                              page < totalPages - 1
+                                  ? () => setState(() => page++)
+                                  : null,
+                        ),
+
+                        IconButton(
+                          icon: const Icon(Icons.last_page),
+                          onPressed:
+                              page == totalPages - 1
+                                  ? null
+                                  : () => setState(() => page = totalPages - 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
             },
           ),
         ),

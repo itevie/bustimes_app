@@ -2,6 +2,7 @@ import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/bustimes/models/livery.dart';
 import 'package:route_log/bustimes/models/operator.dart';
 import 'package:flutter/material.dart';
+import 'package:route_log/bustimes/models/util.dart';
 
 enum ObjectQueryType { string, bool, selector }
 
@@ -42,6 +43,14 @@ final Map<String, List<ObjectQuery>> objectQuries = {
       t: ObjectQueryType.string,
       inputValidator: null,
       getPossibleValues: null,
+    ),
+    (
+      name: "Region (Local Search)",
+      queryName: "region_id",
+      dbName: "region_id",
+      t: ObjectQueryType.selector,
+      inputValidator: null,
+      getPossibleValues: () async => Region.values.map((r) => r.name).toList(),
     ),
     (
       name: "Mode",
@@ -123,6 +132,14 @@ final Map<String, List<ObjectQuery>> objectQuries = {
       inputValidator: null,
       getPossibleValues: null,
     ),
+    (
+      name: "unique",
+      queryName: "unique",
+      dbName: "unique",
+      t: ObjectQueryType.selector,
+      inputValidator: null,
+      getPossibleValues: () async => ["livery_id", "vehicle_type_id"],
+    ),
   ],
 };
 
@@ -130,7 +147,9 @@ List<T> queryViaObjectQuery<T extends BaseModel>(
   List<T> values,
   Map<String, dynamic> filter,
 ) {
-  if (filter.isEmpty) return values;
+  String? unique = filter["unique"];
+
+  if (filter.isEmpty && unique == null) return values;
 
   if (filter.length == 1 &&
       filter.containsKey("search") &&
@@ -138,41 +157,78 @@ List<T> queryViaObjectQuery<T extends BaseModel>(
     return values;
   }
 
-  return values.where((value) {
-    final map = value.toMap();
+  final search = filter["search"]?.toString().toLowerCase();
 
-    for (final f in filter.entries) {
-      String key = f.key;
+  final filtered =
+      values.where((value) {
+        final map = value.toMap();
 
-      if (key == "operator") key = "operator_noc";
-      if (key == "search") continue;
-      if (!map.containsKey(key)) return false;
+        for (final f in filter.entries) {
+          String key = f.key;
 
-      final v = map[key];
+          if (key == "operator") key = "operator_noc";
+          if (key == "search") continue;
+          if (key == "unique") continue;
+          if (!map.containsKey(key)) return false;
 
-      if (f.value is bool) {
-        if (!(f.value == true && v == 1)) return false;
-      } else {
-        if (f.value.toString().toLowerCase() != v.toString().toLowerCase()) {
-          return false;
+          final v = map[key];
+
+          if (f.value is bool) {
+            if (!(f.value == true && v == 1)) return false;
+          } else {
+            if (f.value.toString().toLowerCase() !=
+                v.toString().toLowerCase()) {
+              return false;
+            }
+          }
         }
-      }
-    }
 
-    if (filter.containsKey("search") &&
-        filter["search"] != null &&
-        filter["search"].isNotEmpty) {
-      final search = filter["search"].toString().toLowerCase();
+        if (search != null && search.isNotEmpty) {
+          final matches = map.values.any(
+            (v) => v.toString().toLowerCase().contains(search),
+          );
 
-      final matches = map.values.any(
-        (v) => v.toString().toLowerCase().contains(search),
+          if (!matches) return false;
+        }
+
+        return true;
+      }).toList();
+
+  if (search != null && search.isNotEmpty) {
+    filtered.sort((a, b) {
+      final aMap = a.toMap();
+      final bMap = b.toMap();
+
+      bool aExact = aMap.values.any(
+        (v) => v.toString().toLowerCase() == search,
+      );
+      bool bExact = bMap.values.any(
+        (v) => v.toString().toLowerCase() == search,
       );
 
-      if (!matches) return false;
-    }
+      if (aExact && !bExact) return -1;
+      if (!aExact && bExact) return 1;
+      return 0;
+    });
+  }
+  print(unique);
 
-    return true;
-  }).toList();
+  if (unique != null) {
+    List<String> found = [];
+    filtered.removeWhere((x) {
+      final map = x.toMap();
+      print(unique);
+      print(map.toString());
+      if (!found.contains(map[unique].toString())) {
+        found.insert(0, map[unique].toString());
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+
+  return filtered;
 }
 
 Future<Map<String, dynamic>?> showObjectQueryPrompt(
