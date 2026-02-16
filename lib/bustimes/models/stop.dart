@@ -1,7 +1,7 @@
 import 'package:route_log/app_database.dart';
-import 'package:route_log/bustimes/api_manager.dart';
 import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/bustimes/models/_base_query.dart';
+import 'package:route_log/models/api_has_fetched.dart';
 
 class StopQuery implements BaseQuery {
   String? atcoCode;
@@ -205,6 +205,14 @@ class Stop implements BaseModel {
 
   // ----- SQL Functions -----
 
+  static Future<List<Stop>> getAll() async {
+    final db = await AppDatabase.instance.db;
+
+    final rows = await db.query("stop");
+
+    return rows.map((row) => Stop.buildFromMap(row)).toList();
+  }
+
   static Future<List<Stop>> getAllByService(String line) async {
     final db = await AppDatabase.instance.db;
 
@@ -218,20 +226,23 @@ class Stop implements BaseModel {
 
   // ----- API Functions -----
 
-  static Future<List<Stop>> getAllApi(StopQuery query) async {
-    final List<Stop> stops = await ApiManager.getAllPaginated(
-      ApiOptions(
-        endpoint: 'stops',
-        query: query.toMap(),
-        fromMap: Stop.buildFromMap,
-      ),
+  static Future<List<Stop>> getAllApi(
+    StopQuery query,
+    int offset, {
+    bool refresh = false,
+    bool fetchAll = false,
+  }) async {
+    return await ApiHasFetched.fullNew<Stop>(
+      ApiHasFetchedName.serviceQuery,
+      "stop_query_${query.toMap().toString()}",
+      () async => await Stop.getAll(),
+      Stop.buildFromMap,
+      "stops",
+      offset,
+      refresh: refresh,
+      query: query.toMap(),
+      insertInto: TableKey.stop,
+      getAll: fetchAll,
     );
-
-    AppDatabase.instance.insertManyInBackground(
-      TableKey.stop,
-      stops.map((x) => x.toMap()).toList(),
-    );
-
-    return stops;
   }
 }

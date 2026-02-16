@@ -53,23 +53,27 @@ class _VehiclesPageState extends State<VehiclesPage> {
         preSearch: widget.preSearch,
         fullSearch: widget.fullSearch,
         queryGroup: "vehicle",
-        loadData: (refresh, query) {
+        loadData: (options) {
           return switch (widget.search) {
             OperatorVehicles(:final operator) => operator.getVehicles(
-              VehicleQuery.buildFromMap(query),
-              refresh: refresh,
+              VehicleQuery.buildFromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
             LiveryVehicles(:final livery) => livery.getVehicles(
-              VehicleQuery.buildFromMap(query),
-              refresh: refresh,
+              VehicleQuery.buildFromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
             VehicleTypeVehicles(:final vehicleType) => vehicleType.getVehicles(
-              VehicleQuery.buildFromMap(query),
-              refresh: refresh,
+              VehicleQuery.buildFromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
             VehicleSearch() => Vehicle.getAllApi(
-              VehicleQuery.buildFromMap(query),
-              refresh: refresh,
+              VehicleQuery.buildFromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
           };
         },

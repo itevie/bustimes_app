@@ -155,6 +155,8 @@ class RouteChecklistItem implements BaseModel {
   }) async {
     List<Service> services = await Service.getAllApi(
       ServiceQuery(operator: [operator.noc]),
+      0,
+      fetchAll: true,
     );
 
     for (final service in services) {

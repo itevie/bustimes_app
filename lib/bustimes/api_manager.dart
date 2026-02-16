@@ -9,8 +9,14 @@ class ApiOptions<T> {
   String endpoint;
   Map<String, String>? query;
   FromMap<T> fromMap;
+  int? offset;
 
-  ApiOptions({required this.endpoint, this.query, required this.fromMap});
+  ApiOptions({
+    required this.endpoint,
+    this.query,
+    required this.fromMap,
+    this.offset,
+  });
 }
 
 class ApiManager {
@@ -20,12 +26,21 @@ class ApiManager {
     Uri url = Uri.parse('$apiBase/${options.endpoint}');
 
     if (options.query?.isNotEmpty ?? false) {
-      url = url.replace(queryParameters: options.query);
+      url = url.replace(
+        queryParameters: {
+          ...options.query!,
+          if (options.offset != null) 'offset': options.offset,
+        },
+      );
     }
 
-    print("Get $url");
+    print(url.toString());
 
     final request = await client.getUrl(url);
+    request.headers.set(
+      HttpHeaders.userAgentHeader,
+      'RouteLog/0.1 (+https://github.com/itevie/bustimes_app)',
+    );
     final response = await request.close();
 
     if (response.statusCode != 200) {

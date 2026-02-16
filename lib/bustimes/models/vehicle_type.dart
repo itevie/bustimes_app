@@ -105,20 +105,27 @@ class VehicleType implements BaseModel {
   }
 
   Future<List<Vehicle>> getVehicles(
-    VehicleQuery query, {
+    VehicleQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
     query.vehicleType = id;
-    return await ApiHasFetched.full(
-      ApiHasFetchedName.operatorVehicles,
-      id.toString(),
+
+    return await ApiHasFetched.fullNew(
+      ApiHasFetchedName.vehicleTypeVehicles,
+      "vehicle_type_vehicles_${query.toMap().toString()}",
       () async =>
           (await Vehicle.getAll())
-              .where((v) => v.vehicleType?.id == id)
+              .where((x) => x.vehicleType?.id == id)
               .toList(),
-      () async => await Vehicle.getAllApi(query),
-      skip: refresh,
+      Vehicle.buildFromMap,
+      "vehicles",
+      offset,
+      query: query.toMap(),
       insertInto: TableKey.vehicle,
+      refresh: refresh,
+      getAll: fetchAll,
     );
   }
 }

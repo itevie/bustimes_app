@@ -211,14 +211,11 @@ List<T> queryViaObjectQuery<T extends BaseModel>(
       return 0;
     });
   }
-  print(unique);
 
   if (unique != null) {
     List<String> found = [];
     filtered.removeWhere((x) {
       final map = x.toMap();
-      print(unique);
-      print(map.toString());
       if (!found.contains(map[unique].toString())) {
         found.insert(0, map[unique].toString());
         return false;

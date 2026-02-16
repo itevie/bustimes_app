@@ -18,7 +18,7 @@ class _FavouriteOperatorsPageState extends State<FavouriteOperatorsPage> {
       appBar: AppBar(title: const Text("Favourite Operators")),
       body: ViewList<Operator>(
         name: "favourite operators",
-        loadData: (refresh, query) async => FavouriteOperator.getAllAsObject(),
+        loadData: (options) async => FavouriteOperator.getAllAsObject(),
         itemBuilder: (operator, _) => OperatorWidget(operator: operator),
       ),
     );

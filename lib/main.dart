@@ -13,7 +13,7 @@ import 'package:route_log/widgets/pages/home_page.dart';
 import 'package:route_log/widgets/pages/lists/lists.dart';
 import 'package:route_log/widgets/pages/map_page.dart';
 import 'package:route_log/widgets/pages/search_page.dart';
-import 'package:route_log/widgets/prompts/input_prompt.dart';
+import "package:dawn_ui_flutter/prompts/prompts.dart";
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

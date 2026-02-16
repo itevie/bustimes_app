@@ -20,7 +20,7 @@ class _LiveriesPageState extends State<LiveriesPage> {
     final viewWidget = ViewList<Livery>(
       name: "liveries",
       allowGrid: true,
-      loadData: (refresh, query) async => Livery.getAllApi(force: refresh),
+      loadData: (options) async => Livery.getAllApi(force: options.refresh),
       itemBuilder:
           (livery, details) => LiveryWidget(
             key: Key(livery.id.toString()),

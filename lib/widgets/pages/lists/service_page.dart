@@ -46,15 +46,17 @@ class _ServicePageState extends State<ServicePage> {
         preSearch: widget.preSearch,
         fullSearch: widget.fullSearch,
         allowGrid: true,
-        loadData: (refresh, query) async {
+        loadData: (options) async {
           return switch (widget.search) {
             OperatorServices(:final operator) => operator.getServices(
-              ServiceQuery.fromMap(query),
-              refresh: refresh,
+              ServiceQuery.fromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
             AllServices() => Service.getAllApi(
-              ServiceQuery.fromMap(query),
-              refresh: refresh,
+              ServiceQuery.fromMap(options.query),
+              options.offset,
+              refresh: options.refresh,
             ),
           };
         },

@@ -18,7 +18,7 @@ class _FavouriteServicesPageState extends State<FavouriteServicesPage> {
       appBar: AppBar(title: const Text("Favourite Services")),
       body: ViewList<Service>(
         name: "favourite services",
-        loadData: (refresh, query) async => FavouriteService.getAllAsObject(),
+        loadData: (options) async => FavouriteService.getAllAsObject(),
         itemBuilder: (service, _) => ServiceWidget(service: service),
       ),
     );

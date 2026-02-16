@@ -170,33 +170,46 @@ class Operator implements BaseModel {
   }
 
   Future<List<Vehicle>> getVehicles(
-    VehicleQuery query, {
+    VehicleQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
     query.operator = noc;
-    return await ApiHasFetched.full(
+
+    return await ApiHasFetched.fullNew(
       ApiHasFetchedName.operatorVehicles,
-      noc,
+      "operator_vehicles_${query.toMap().toString()}",
       () async => await Vehicle.getAllByNoc(noc),
-      () async => await Vehicle.getAllApi(query),
-      skip: refresh,
+      Vehicle.buildFromMap,
+      "vehicles",
+      offset,
+      query: query.toMap(),
       insertInto: TableKey.vehicle,
+      refresh: refresh,
+      getAll: fetchAll,
     );
   }
 
   Future<List<Service>> getServices(
-    ServiceQuery query, {
+    ServiceQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
     query.operator = [noc];
-    print(query);
-    return await ApiHasFetched.full(
+
+    return await ApiHasFetched.fullNew(
       ApiHasFetchedName.operatorRoutes,
       noc,
       () async => await Service.getAllByNoc(noc),
-      () async => await Service.getAllApi(query),
-      skip: refresh,
+      Service.buildFromMap,
+      "services",
+      offset,
+      query: query.toMap(),
       insertInto: TableKey.service,
+      refresh: refresh,
+      getAll: fetchAll,
     );
   }
 }

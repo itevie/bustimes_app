@@ -31,7 +31,7 @@ class ListItemsPageState extends State<ListItemsPage> {
         key: _listKey,
         name: 'checklists',
         loadData:
-            (_, _) async =>
+            (options) async =>
                 RouteChecklistItem.getAllWithService(widget.list.id),
         itemBuilder: (item, _) {
           return ListItemsItem(

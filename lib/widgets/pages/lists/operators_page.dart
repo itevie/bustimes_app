@@ -17,8 +17,8 @@ class _OperatorsPageState extends State<OperatorsPage> {
   Widget build(BuildContext context) {
     final viewWidget = ViewList<Operator>(
       name: "operators",
-      loadData: (refresh, query) async {
-        return Operator.getAllApi(refresh: refresh);
+      loadData: (options) async {
+        return Operator.getAllApi(refresh: options.refresh);
       },
       preSearch: widget.preSearch,
       itemBuilder: (operator, _) => OperatorWidget(operator: operator),

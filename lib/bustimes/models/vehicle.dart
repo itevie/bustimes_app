@@ -1,5 +1,4 @@
 import 'package:route_log/app_database.dart';
-import 'package:route_log/bustimes/api_manager.dart';
 import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/bustimes/models/_base_query.dart';
 import 'package:route_log/bustimes/models/operator.dart';
@@ -241,35 +240,23 @@ class Vehicle implements BaseModel {
   }
 
   // ----- API Functions -----
-
   static Future<List<Vehicle>> getAllApi(
-    VehicleQuery query, {
+    VehicleQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
-    return await ApiHasFetched.full<Vehicle>(
+    return await ApiHasFetched.fullNew(
       ApiHasFetchedName.vehicleQuery,
       "vehicle_query_${query.toMap().toString()}",
-      () async => await Vehicle.getAll(),
-      () async {
-        final map = query.toMap();
-
-        if (map.isEmpty ||
-            (map.length == 1 &&
-                map.containsKey("search") &&
-                (map["search"] == null || map["search"]!.isEmpty))) {
-          return await Vehicle.getAll();
-        }
-
-        return await ApiManager.getAllPaginated(
-          ApiOptions(
-            endpoint: 'vehicles',
-            query: query.toMap(),
-            fromMap: Vehicle.buildFromMap,
-          ),
-        );
-      },
-      skip: refresh,
+      () async => (await Vehicle.getAll()),
+      Vehicle.buildFromMap,
+      "vehicles",
+      offset,
+      query: query.toMap(),
       insertInto: TableKey.vehicle,
+      refresh: refresh,
+      getAll: fetchAll,
     );
   }
 

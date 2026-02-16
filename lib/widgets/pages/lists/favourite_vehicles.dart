@@ -18,7 +18,7 @@ class _FavouriteVehiclesPageState extends State<FavouriteVehiclesPage> {
       appBar: AppBar(title: const Text("Favourite Vehicles")),
       body: ViewList<Vehicle>(
         name: "favourite vehicles",
-        loadData: (refresh, query) async => FavouriteVehicles.getAllAsObject(),
+        loadData: (options) async => FavouriteVehicles.getAllAsObject(),
         itemBuilder: (vehicle, _) => VehicleWidget(vehicle: vehicle),
       ),
     );

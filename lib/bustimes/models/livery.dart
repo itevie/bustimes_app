@@ -100,18 +100,25 @@ class Livery implements BaseModel {
   }
 
   Future<List<Vehicle>> getVehicles(
-    VehicleQuery query, {
+    VehicleQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
     query.livery = id;
-    return await ApiHasFetched.full(
-      ApiHasFetchedName.operatorVehicles,
-      id.toString(),
+
+    return await ApiHasFetched.fullNew(
+      ApiHasFetchedName.liveryVehicles,
+      "livery_vehicles_${query.toMap().toString()}",
       () async =>
-          (await Vehicle.getAll()).where((v) => v.livery?.id == id).toList(),
-      () async => await Vehicle.getAllApi(query),
-      skip: refresh,
+          (await Vehicle.getAll()).where((x) => x.livery?.id == id).toList(),
+      Vehicle.buildFromMap,
+      "vehicles",
+      offset,
+      query: query.toMap(),
       insertInto: TableKey.vehicle,
+      refresh: refresh,
+      getAll: fetchAll,
     );
   }
 }

@@ -33,7 +33,7 @@ class ListsPageState extends State<ListsPage> {
     return ViewList<RouteChecklist>(
       key: _key,
       name: 'checklists',
-      loadData: (refresh, query) async => lists,
+      loadData: (options) async => lists,
       itemBuilder: (list, _) {
         return ListWidget(key: Key(list.id.toString()), list: list);
       },

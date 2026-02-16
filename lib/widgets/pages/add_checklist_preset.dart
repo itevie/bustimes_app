@@ -1,9 +1,9 @@
+import 'package:dawn_ui_flutter/prompts/prompts.dart';
 import 'package:flutter/material.dart';
 import 'package:route_log/bustimes/models/operator.dart';
 import 'package:route_log/models/route_checklist.dart';
 import 'package:route_log/models/route_checklist_item.dart';
 import 'package:route_log/util/preset_checklists.dart';
-import 'package:route_log/widgets/prompts/loader.dart';
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/page.dart';
 

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/util/query.dart';
-import 'package:route_log/widgets/prompts/confirm.dart';
+import "package:dawn_ui_flutter/prompts/prompts.dart";
 
 typedef ItemBuilderDetails = ({bool isGrid});
 
+typedef ViewWiedgetQuery =
+    ({bool refresh, Map<String, dynamic> query, int offset});
+
 class ViewList<T extends BaseModel> extends StatefulWidget {
-  final Future<List<T>> Function(bool refresh, Map<String, dynamic> query)
-  loadData;
+  final Future<List<T>> Function(ViewWiedgetQuery options) loadData;
   final Widget Function(T item, ItemBuilderDetails options) itemBuilder;
   final String? queryGroup;
   final Widget? note;
@@ -53,7 +55,11 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
       query = {...query, ...widget.fullSearch!};
     }
 
-    _future = widget.loadData(false, query);
+    _future = widget.loadData((
+      refresh: false,
+      query: query,
+      offset: page * 100,
+    ));
   }
 
   @override
@@ -62,10 +68,14 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
     super.dispose();
   }
 
-  void _refresh({bool fullRefresh = true}) {
+  void _refresh({bool fullRefresh = true, bool noPageChange = false}) {
     setState(() {
-      page = 0;
-      _future = widget.loadData(fullRefresh, query);
+      if (!noPageChange) page = 0;
+      _future = widget.loadData((
+        refresh: fullRefresh,
+        query: query,
+        offset: page * 100,
+      ));
     });
   }
 
@@ -251,7 +261,13 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                           icon: const Icon(Icons.chevron_right),
                           onPressed:
                               page < totalPages - 1
-                                  ? () => setState(() => page++)
+                                  ? () => setState(() {
+                                    page++;
+                                    _refresh(
+                                      noPageChange: true,
+                                      fullRefresh: false,
+                                    );
+                                  })
                                   : null,
                         ),
 

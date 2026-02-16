@@ -2,7 +2,6 @@ import 'package:route_log/app_database.dart';
 import 'package:route_log/bustimes/api_manager.dart';
 import 'package:route_log/bustimes/models/_base_model.dart';
 import 'package:route_log/bustimes/models/_base_query.dart';
-import 'package:route_log/bustimes/models/stop.dart';
 import 'package:route_log/bustimes/models/trip.dart';
 import 'package:route_log/bustimes/models/util.dart';
 import 'package:route_log/models/api_has_fetched.dart';
@@ -185,45 +184,22 @@ class Service implements BaseModel {
   // ----- API Functions -----
 
   static Future<List<Service>> getAllApi(
-    ServiceQuery query, {
+    ServiceQuery query,
+    int offset, {
     bool refresh = false,
+    bool fetchAll = false,
   }) async {
-    return await ApiHasFetched.full<Service>(
+    return await ApiHasFetched.fullNew<Service>(
       ApiHasFetchedName.serviceQuery,
-      "serice_query_${query.toMap().toString()}",
+      "service_query_${query.toMap().toString()}",
       () async => await Service.getAll(),
-      () async {
-        final map = query.toMap();
-
-        if (map.length == 1 &&
-            map.containsKey("search") &&
-            (map["search"] == null || map["search"]!.isEmpty)) {
-          return await Service.getAll();
-        }
-
-        return await ApiManager.getAllPaginated(
-          ApiOptions(
-            endpoint: 'services',
-            query: query.toMap(),
-            fromMap: Service.buildFromMap,
-          ),
-        );
-      },
-      skip: refresh,
+      Service.buildFromMap,
+      "services",
+      offset,
+      refresh: refresh,
+      query: query.toMap(),
       insertInto: TableKey.service,
-    );
-  }
-
-  Future<List<Stop>> getStops(StopQuery query, {bool refresh = false}) async {
-    query.service = id;
-
-    return await ApiHasFetched.full<Stop>(
-      ApiHasFetchedName.serviceStops,
-      id.toString(),
-      () async => await Stop.getAllByService(lineName),
-      () async => await Stop.getAllApi(query),
-      skip: refresh,
-      insertInto: TableKey.stop,
+      getAll: fetchAll,
     );
   }
 

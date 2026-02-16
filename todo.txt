@@ -6,3 +6,5 @@
 - Redirect to ui from map settings
 - Operator from service
 - Make it load more pages until bustimes says there r none
+- Setting to change default page
+- Ordering in filters

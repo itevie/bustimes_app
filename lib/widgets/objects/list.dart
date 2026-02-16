@@ -3,7 +3,7 @@ import 'package:route_log/models/favourite_list.dart';
 import 'package:route_log/models/route_checklist.dart';
 import 'package:route_log/models/route_checklist_item.dart';
 import 'package:route_log/widgets/pages/lists/list_items.dart';
-import 'package:route_log/widgets/prompts/message.dart';
+import "package:dawn_ui_flutter/prompts/prompts.dart";
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/popup_menu.dart';
 

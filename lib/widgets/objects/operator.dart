@@ -11,9 +11,7 @@ import 'package:route_log/util/other.dart';
 import 'package:route_log/widgets/pages/lists/service_page.dart';
 import 'package:route_log/widgets/pages/lists/vehicles_page.dart';
 import 'package:route_log/widgets/pages/map_page.dart';
-import 'package:route_log/widgets/prompts/confirm.dart';
-import 'package:route_log/widgets/prompts/loader.dart';
-import 'package:route_log/widgets/prompts/selector_prompt.dart';
+import 'package:dawn_ui_flutter/prompts/prompts.dart';
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/popup_menu.dart';
 
@@ -165,7 +163,12 @@ class _OperatorWidgetState extends State<OperatorWidget> {
                       callback: () async {
                         final services = await showLoadingPrompt(
                           context,
-                          operator.getServices(ServiceQuery(), refresh: true),
+                          operator.getServices(
+                            ServiceQuery(),
+                            0,
+                            fetchAll: true,
+                            refresh: true,
+                          ),
                         );
 
                         int? id = await showSelectPrompt(

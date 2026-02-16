@@ -33,7 +33,7 @@ class ChecklistPresetsPageState extends State<ChecklistPresetsPage> {
         note: const Text(
           "A preset will add all services from the listed operators.",
         ),
-        loadData: (refresh, query) async => checklistPresets,
+        loadData: (options) async => checklistPresets,
         itemBuilder: (list, _) {
           return MyCard(
             onTap: () {
