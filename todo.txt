@@ -5,6 +5,7 @@
 - Show recent network reuests
 - Redirect to ui from map settings
 - Operator from service
-- Make it load more pages until bustimes says there r none
 - Setting to change default page
 - Ordering in filters
+- Fix when view list thinks the pages have ended
+- Take screenshots on android and add to readme

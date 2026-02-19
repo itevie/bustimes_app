@@ -121,11 +121,12 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
               Row(
                 children: [
                   if (widget.queryGroup != null) ...[
-                    OutlinedButton.icon(
+                    OutlinedButton(
                       onPressed: () async {
                         final result = await showObjectQueryPrompt(
                           context,
                           objectQuries[widget.queryGroup]!,
+                          prefill: query,
                         );
 
                         if (result == null) return;
@@ -136,16 +137,16 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                           _refresh(fullRefresh: false);
                         });
                       },
-                      icon: const Icon(Icons.filter_list),
-                      label: const Text('Filter'),
+                      child: const Icon(Icons.filter_list),
+                      // label: const Text('Filter'),
                     ),
                     const SizedBox(width: 8),
                   ],
-                  OutlinedButton.icon(
+                  OutlinedButton(
                     onPressed: reloadData,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Refresh'),
+                    child: const Icon(Icons.refresh),
                   ),
+
                   const SizedBox(width: 8),
                   FutureBuilder<List<T>>(
                     future: _future,

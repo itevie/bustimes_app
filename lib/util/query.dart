@@ -230,8 +230,9 @@ List<T> queryViaObjectQuery<T extends BaseModel>(
 
 Future<Map<String, dynamic>?> showObjectQueryPrompt(
   BuildContext context,
-  List<ObjectQuery> queries,
-) async {
+  List<ObjectQuery> queries, {
+  Map<String, dynamic>? prefill,
+}) async {
   final Map<String, dynamic> values = {};
   final Map<String, TextEditingController> textControllers = {};
   final Map<String, bool?> boolValues = {};
@@ -246,6 +247,22 @@ Future<Map<String, dynamic>?> showObjectQueryPrompt(
       boolValues[q.queryName] = null;
     } else if (q.t == ObjectQueryType.selector) {
       selectorValues[q.queryName] = null;
+    }
+  }
+
+  if (prefill != null) {
+    for (final obj in prefill.entries) {
+      if (obj.key == "search") continue;
+
+      final t = queries.firstWhere((x) => x.queryName == obj.key);
+
+      if (t.t == ObjectQueryType.string) {
+        textControllers[t.queryName]!.text = obj.value as String? ?? "";
+      } else if (t.t == ObjectQueryType.bool) {
+        boolValues[t.queryName] = obj.value as bool?;
+      } else if (t.t == ObjectQueryType.selector) {
+        selectorValues[t.queryName] = obj.value as String?;
+      }
     }
   }
 
@@ -295,15 +312,19 @@ Future<Map<String, dynamic>?> showObjectQueryPrompt(
                               return DropdownButtonFormField<String>(
                                 decoration: InputDecoration(labelText: q.name),
                                 value: selectorValues[q.queryName],
-                                items:
-                                    snapshot.data!
-                                        .map(
-                                          (v) => DropdownMenuItem(
-                                            value: v,
-                                            child: Text(v),
-                                          ),
-                                        )
-                                        .toList(),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: "special-none",
+                                    child: Text("None"),
+                                  ),
+                                  ...snapshot.data!.map(
+                                    (v) => DropdownMenuItem(
+                                      value: v,
+                                      child: Text(v),
+                                    ),
+                                  ),
+                                ],
+
                                 onChanged: (v) {
                                   setState(() {
                                     selectorValues[q.queryName] = v;
@@ -350,7 +371,7 @@ Future<Map<String, dynamic>?> showObjectQueryPrompt(
 
                       case ObjectQueryType.selector:
                         value = selectorValues[q.queryName];
-                        if (value == null) continue;
+                        if (value == null || value == "special-none") continue;
                         break;
                     }
 

@@ -13,6 +13,7 @@ import 'package:route_log/models/favourite_list.dart';
 import 'package:route_log/models/favourite_operator.dart';
 import 'package:route_log/models/favourite_service.dart';
 import 'package:route_log/models/favourite_vehicles.dart';
+import 'package:route_log/models/options.dart';
 import 'package:route_log/models/route_checklist.dart';
 import 'package:route_log/models/route_checklist_item.dart';
 // ignore: unnecessary_import
@@ -76,6 +77,7 @@ class AppDatabase {
     await db.execute(RouteChecklist.sqlTable);
     await db.execute(RouteChecklistItem.sqlTable);
     await db.execute(ApiHasFetched.sqlTable);
+    await db.execute(RouteLogOptions.sqlTable);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

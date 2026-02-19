@@ -1,3 +1,4 @@
+import 'package:dawn_ui_flutter/util.dart';
 import 'package:flutter/material.dart';
 import 'package:route_log/bustimes/models/livery.dart';
 import 'package:route_log/bustimes/models/operator.dart';
@@ -6,6 +7,7 @@ import 'package:route_log/models/favourite_list.dart';
 import 'package:route_log/models/favourite_operator.dart';
 import 'package:route_log/models/favourite_service.dart';
 import 'package:route_log/models/favourite_vehicles.dart';
+import 'package:route_log/models/options.dart';
 import 'package:route_log/models/route_checklist.dart';
 import 'package:route_log/models/route_checklist_item.dart';
 import 'package:route_log/widgets/pages/favourites_page.dart';
@@ -14,6 +16,7 @@ import 'package:route_log/widgets/pages/lists/lists.dart';
 import 'package:route_log/widgets/pages/map_page.dart';
 import 'package:route_log/widgets/pages/search_page.dart';
 import "package:dawn_ui_flutter/prompts/prompts.dart";
+import 'package:route_log/widgets/pages/settings_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,6 +95,7 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> loadAll() async {
     Map<String, Future<void> Function()> futures = {
+      "options": () => RouteLogOptions.updateCache(),
       "liveries": () => Livery.getAllApi(),
       "vehicle types": () => VehicleType.getAllApi(),
       "operators": () => Operator.getAllApi(),
@@ -117,7 +121,12 @@ class _MainAppState extends State<MainApp> {
       appBar: AppBar(
         title: Text("data"),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+          IconButton(
+            onPressed: () {
+              navigate(context, SettingsPage());
+            },
+            icon: const Icon(Icons.settings),
+          ),
         ],
       ),
       body: FutureBuilder(
