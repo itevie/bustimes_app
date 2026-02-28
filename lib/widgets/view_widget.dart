@@ -5,25 +5,21 @@ import 'package:route_log/widgets/pages/raw_details_page.dart';
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/popup_menu.dart';
 
-typedef ViewWidgetAction =
-    ({IconData icon, String name, VoidCallback callback});
+// typedef ViewWidgetAction =
+// ({IconData icon, String name, VoidCallback callback});
 typedef ViewWidgetGridOptions = ({Widget widget, VoidCallback? onTap});
 typedef ViewWidgetFavouriteOptions =
     ({bool Function() fetch, Future<void> Function() update});
 typedef ViewWidgetSideButton =
-    ({
-      IconData icon,
-      VoidCallback? onTap,
-      List<ViewWidgetAction>? popupActions,
-    });
+    ({IconData icon, VoidCallback? onTap, List<PopupMenuItemC>? popupActions});
 
 class ViewWidget extends StatefulWidget {
   final List<Widget> children;
   final Widget? leftChild;
   final BaseModel model;
   final ViewWidgetGridOptions? gridChild;
-  final List<ViewWidgetAction> actions;
-  final List<ViewWidgetAction> popupActions;
+  final List<PopupMenuItemC> actions;
+  final List<PopupMenuItemC> popupActions;
   final ViewWidgetFavouriteOptions? favourite;
   final bool noRawIdButton;
 
@@ -59,7 +55,7 @@ class _ViewWidgetState extends State<ViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List<ViewWidgetAction> popupActions = [
+    List<PopupMenuItemC> popupActions = [
       ...widget.popupActions,
       if (!widget.noRawIdButton)
         (

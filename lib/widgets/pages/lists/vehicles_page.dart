@@ -47,7 +47,15 @@ class _VehiclesPageState extends State<VehiclesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Vehicles for Test")),
+      appBar: AppBar(
+        title: Text(switch (widget.search) {
+          OperatorVehicles(:final operator) => "Vehicles from ${operator.name}",
+          LiveryVehicles(:final livery) => "Vehicles with ${livery.name}",
+          VehicleTypeVehicles(:final vehicleType) =>
+            "${vehicleType.name} vehicles",
+          VehicleSearch() => "Vehicles",
+        }),
+      ),
       body: ViewList<Vehicle>(
         name: "vehicles",
         preSearch: widget.preSearch,

@@ -6,6 +6,7 @@ import 'package:route_log/widgets/pages/lists/list_items.dart';
 import "package:dawn_ui_flutter/prompts/prompts.dart";
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/popup_menu.dart';
+import 'package:route_log/widgets/util/square_icon.dart';
 
 class ListWidget extends StatefulWidget {
   final RouteChecklist list;
@@ -49,6 +50,15 @@ class ListWidgetState extends State<ListWidget> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            squareIcon(
+              context,
+              widget.list.type == RouteChecklistType.route
+                  ? Icons.route
+                  : Icons.directions_bus,
+            ),
+
+            const SizedBox(width: 16),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

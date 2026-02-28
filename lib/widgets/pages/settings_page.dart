@@ -1,7 +1,4 @@
-import 'package:dawn_ui_flutter/basic_scaffold.dart';
 import 'package:dawn_ui_flutter/dawn_ui.dart';
-import 'package:dawn_ui_flutter/page_change_card.dart';
-import 'package:dawn_ui_flutter/util.dart';
 import 'package:flutter/material.dart';
 import 'package:route_log/widgets/util/page.dart';
 
@@ -33,7 +30,9 @@ class SettingsPageState extends State<SettingsPage> {
             PageChangeCard(
               icon: Icons.dns,
               child: const Text("Manage Data"),
-              onTap: () {},
+              onTap: () {
+                // navigate(context, ManageDataSettingsPage());
+              },
             ),
             PageChangeCard(
               icon: Icons.list,

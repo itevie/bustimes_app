@@ -20,6 +20,7 @@ class _FavouriteOperatorsPageState extends State<FavouriteOperatorsPage> {
         name: "favourite operators",
         loadData: (options) async => FavouriteOperator.getAllAsObject(),
         itemBuilder: (operator, _) => OperatorWidget(operator: operator),
+        noConfirmReload: true,
       ),
     );
   }

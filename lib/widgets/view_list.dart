@@ -17,6 +17,7 @@ class ViewList<T extends BaseModel> extends StatefulWidget {
   final Map<String, dynamic>? fullSearch;
   final String name;
   final bool allowGrid;
+  final bool noConfirmReload;
 
   const ViewList({
     super.key,
@@ -28,6 +29,7 @@ class ViewList<T extends BaseModel> extends StatefulWidget {
     this.fullSearch,
     this.preSearch,
     this.allowGrid = false,
+    this.noConfirmReload = false,
   });
 
   @override
@@ -40,6 +42,8 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
 
   Map<String, dynamic> query = {};
   bool isGrid = false;
+
+  List<String>? itemKeys = [];
 
   int page = 0;
   static const int pageSize = 50;
@@ -80,13 +84,16 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
   }
 
   void reloadData() async {
-    final result = await showConfirmPrompt(
-      context,
-      const Text("Reload All Data?"),
-      const Text(
-        "Are you sure you want to fetch all data from the bustimes website?",
-      ),
-    );
+    final result =
+        widget.noConfirmReload
+            ? true
+            : await showConfirmPrompt(
+              context,
+              const Text("Reload All Data?"),
+              const Text(
+                "Are you sure you want to fetch all data from the bustimes website?",
+              ),
+            );
 
     if (result) _refresh();
   }
@@ -139,6 +146,43 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
                       },
                       child: const Icon(Icons.filter_list),
                       // label: const Text('Filter'),
+                    ),
+                    OutlinedButton(
+                      onPressed:
+                          itemKeys == null
+                              ? null
+                              : () async {
+                                final result = await showSelectPrompt(
+                                  context,
+                                  const Text("Choose Order"),
+                                  {
+                                    ...itemKeys!.asMap().map(
+                                      (x, v) => MapEntry(x, "$v (Ascending)"),
+                                    ),
+                                    ...itemKeys!.asMap().map(
+                                      (x, v) => MapEntry(
+                                        itemKeys!.length + x,
+                                        "$v (Descending)",
+                                      ),
+                                    ),
+                                  },
+                                );
+
+                                if (result == null) return;
+
+                                final descending = result >= itemKeys!.length;
+                                final t =
+                                    itemKeys![descending
+                                        ? result - itemKeys!.length
+                                        : result];
+                                showMessagePrompt(
+                                  // ignore: use_build_context_synchronously
+                                  context,
+                                  Text("$descending"),
+                                  Text(t),
+                                );
+                              },
+                      child: const Icon(Icons.swap_vert),
                     ),
                     const SizedBox(width: 8),
                   ],
@@ -202,6 +246,12 @@ class _ViewListState<T extends BaseModel> extends State<ViewList<T>> {
               }
 
               final allItems = snapshot.data!;
+
+              if (allItems.isNotEmpty) {
+                itemKeys =
+                    allItems[0].toMap().entries.map((x) => x.key).toList();
+              }
+
               final totalPages = (allItems.length / pageSize).ceil().clamp(
                 1,
                 9999,

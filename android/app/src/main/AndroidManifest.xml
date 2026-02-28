@@ -14,7 +14,7 @@
     </queries>
 
     <application
-        android:label="route_log"
+        android:label="Bustimes"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

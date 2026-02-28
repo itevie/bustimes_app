@@ -37,6 +37,7 @@ class ListsPageState extends State<ListsPage> {
       itemBuilder: (list, _) {
         return ListWidget(key: Key(list.id.toString()), list: list);
       },
+      noConfirmReload: true,
     );
   }
 }

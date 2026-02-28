@@ -145,7 +145,11 @@ class Operator implements BaseModel {
 
     final rows = await db.query('operator');
 
-    return rows.map((row) => Operator.buildFromMap(row)).toList();
+    final data = rows.map((row) => Operator.buildFromMap(row)).toList();
+
+    cache = Map.fromEntries(data.map((x) => MapEntry(x.noc, x)));
+
+    return data;
   }
 
   // ----- API Functions -----

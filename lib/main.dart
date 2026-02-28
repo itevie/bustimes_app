@@ -10,12 +10,12 @@ import 'package:route_log/models/favourite_vehicles.dart';
 import 'package:route_log/models/options.dart';
 import 'package:route_log/models/route_checklist.dart';
 import 'package:route_log/models/route_checklist_item.dart';
+import 'package:route_log/widgets/util/prompts/add_checklist_prompt.dart';
 import 'package:route_log/widgets/pages/favourites_page.dart';
 import 'package:route_log/widgets/pages/home_page.dart';
 import 'package:route_log/widgets/pages/lists/lists.dart';
 import 'package:route_log/widgets/pages/map_page.dart';
 import 'package:route_log/widgets/pages/search_page.dart';
-import "package:dawn_ui_flutter/prompts/prompts.dart";
 import 'package:route_log/widgets/pages/settings_page.dart';
 
 void main() {
@@ -60,8 +60,15 @@ final List<PageType> order = [
   PageType.favourites,
   PageType.search,
   PageType.map,
-  // PageType.settings,
 ];
+
+final Map<PageType, String> typeNames = {
+  PageType.home: "Home",
+  PageType.list: "Checklists",
+  PageType.favourites: "Favourites",
+  PageType.search: "Search",
+  PageType.map: "Map",
+};
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -119,7 +126,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("data"),
+        title: Text(typeNames[currentPage]!),
         actions: [
           IconButton(
             onPressed: () {
@@ -162,16 +169,9 @@ class _MainAppState extends State<MainApp> {
           currentPage == PageType.list
               ? FloatingActionButton(
                 onPressed: () async {
-                  String? name = await showInputPrompt(
-                    context,
-                    const Text("Name of list"),
-                    const Text("You will be able to add routes later."),
-                  );
-
-                  if (name == null || name.isEmpty) return;
-
-                  await RouteChecklist.makeNew(name);
-                  listsPageKey.currentState?.refresh();
+                  showAddChecklistPrompt(context, () {
+                    listsPageKey.currentState?.refresh();
+                  });
                 },
                 child: const Icon(Icons.add),
               )

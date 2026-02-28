@@ -73,7 +73,7 @@ final Map<String, List<ObjectQuery>> objectQuries = {
     (
       name: "Search",
       queryName: "search",
-      dbName: "?",
+      dbName: "?1",
       t: ObjectQueryType.string,
       inputValidator: null,
       getPossibleValues: null,

@@ -20,6 +20,7 @@ class _FavouriteServicesPageState extends State<FavouriteServicesPage> {
         name: "favourite services",
         loadData: (options) async => FavouriteService.getAllAsObject(),
         itemBuilder: (service, _) => ServiceWidget(service: service),
+        noConfirmReload: true,
       ),
     );
   }

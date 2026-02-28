@@ -32,13 +32,15 @@ class ListItemsPageState extends State<ListItemsPage> {
         name: 'checklists',
         loadData:
             (options) async =>
-                RouteChecklistItem.getAllWithService(widget.list.id),
+                (await Future.wait(
+                  (await RouteChecklistItem.getAllForChecklist(
+                    widget.list.id,
+                  )).map((x) async => await x.getCombined()),
+                )).where((x) => x.entity != null).toList(),
         itemBuilder: (item, _) {
-          return ListItemsItem(
-            key: ValueKey(item.checkListItem.id),
-            item: item,
-          );
+          return ListItemsItem(key: ValueKey(item.item.id), item: item);
         },
+        noConfirmReload: true,
       ),
       floatingActionButton: _Fab(
         addOperator: () {},

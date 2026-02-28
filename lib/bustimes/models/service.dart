@@ -170,6 +170,20 @@ class Service implements BaseModel {
     return rows.map((row) => Service.buildFromMap(row)).toList();
   }
 
+  static Future<Service?> getById(int id) async {
+    final db = await AppDatabase.instance.db;
+
+    final row = await db.query(
+      'service',
+      where: "id = ?",
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (row.isEmpty) return null;
+    return Service.buildFromMap(row[0]);
+  }
+
   static Future<List<Service>> getAllByNoc(String noc) async {
     final db = await AppDatabase.instance.db;
 

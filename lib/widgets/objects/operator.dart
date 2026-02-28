@@ -2,16 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:route_log/bustimes/models/operator.dart';
-import 'package:route_log/bustimes/models/service.dart';
 import 'package:route_log/bustimes/models/util.dart';
 import 'package:route_log/models/favourite_operator.dart';
 import 'package:route_log/models/route_checklist.dart';
-import 'package:route_log/models/route_checklist_item.dart';
 import 'package:route_log/util/other.dart';
+import 'package:route_log/widgets/util/prompts/add_entity_to_list.dart';
 import 'package:route_log/widgets/pages/lists/service_page.dart';
 import 'package:route_log/widgets/pages/lists/vehicles_page.dart';
 import 'package:route_log/widgets/pages/map_page.dart';
-import 'package:dawn_ui_flutter/prompts/prompts.dart';
 import 'package:route_log/widgets/util/my_card.dart';
 import 'package:route_log/widgets/util/popup_menu.dart';
 
@@ -158,62 +156,25 @@ class _OperatorWidgetState extends State<OperatorWidget> {
                 PopupMenu(
                   items: <PopupMenuItemC>[
                     (
-                      name: "Add To List",
+                      name: "Add Services To List",
                       icon: Icons.list,
                       callback: () async {
-                        final services = await showLoadingPrompt(
+                        showAddEntityToListPrompt(
                           context,
-                          operator.getServices(
-                            ServiceQuery(),
-                            0,
-                            fetchAll: true,
-                            refresh: true,
-                          ),
+                          RouteChecklistType.route,
+                          operator,
                         );
-
-                        int? id = await showSelectPrompt(
-                          // ignore: use_build_context_synchronously
+                      },
+                    ),
+                    (
+                      name: "Add Vehicles To List",
+                      icon: Icons.list,
+                      callback: () async {
+                        showAddEntityToListPrompt(
                           context,
-                          const Text("Add Operator's Services"),
-                          RouteChecklist.cache.map(
-                            (key, value) => MapEntry(key, value.name),
-                          ),
-                          notes: Text(
-                            "Select a list to add ${services.length} services to ",
-                          ),
+                          RouteChecklistType.vehicle,
+                          operator,
                         );
-
-                        if (id == null) return;
-
-                        final result = await showConfirmPrompt(
-                          // ignore: use_build_context_synchronously
-                          context,
-                          const Text("Are you sure?"),
-                          Text(
-                            "Are you sure you want to add ${services.length} services to ${RouteChecklist.cache[id]?.name}",
-                          ),
-                        );
-
-                        if (result) {
-                          for (final service in services) {
-                            await RouteChecklistItem.insertFromOperator(
-                              id,
-                              service,
-                              operator,
-                            );
-                          }
-
-                          ScaffoldMessenger.of(
-                            // ignore: use_build_context_synchronously
-                            context,
-                          ).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Added services to ${RouteChecklist.cache[id]?.name}",
-                              ),
-                            ),
-                          );
-                        }
                       },
                     ),
                   ],

@@ -216,6 +216,20 @@ class Vehicle implements BaseModel {
     return rows.map((row) => Vehicle.buildFromMap(row)).toList();
   }
 
+  static Future<Vehicle?> getById(int id) async {
+    final db = await AppDatabase.instance.db;
+
+    final row = await db.query(
+      'vehicle',
+      where: "id = ?",
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (row.isEmpty) return null;
+    return Vehicle.buildFromMap(row[0]);
+  }
+
   static Future<List<Vehicle>> getAllByNoc(String noc) async {
     final db = await AppDatabase.instance.db;
 

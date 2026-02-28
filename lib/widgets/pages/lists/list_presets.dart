@@ -80,6 +80,7 @@ class ChecklistPresetsPageState extends State<ChecklistPresetsPage> {
             ),
           );
         },
+        noConfirmReload: true,
       ),
     );
   }

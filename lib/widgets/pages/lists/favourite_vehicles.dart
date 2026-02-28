@@ -20,6 +20,7 @@ class _FavouriteVehiclesPageState extends State<FavouriteVehiclesPage> {
         name: "favourite vehicles",
         loadData: (options) async => FavouriteVehicles.getAllAsObject(),
         itemBuilder: (vehicle, _) => VehicleWidget(vehicle: vehicle),
+        noConfirmReload: true,
       ),
     );
   }

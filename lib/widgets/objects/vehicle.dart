@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:route_log/bustimes/models/vehicle.dart';
 import 'package:route_log/models/favourite_vehicles.dart';
-import 'package:route_log/util/other.dart';
+import 'package:route_log/widgets/util/popups/vehicle_popup.dart';
 import 'package:route_log/widgets/livery_image.dart';
 import 'package:route_log/widgets/pages/lists/liveries_page.dart';
 import 'package:route_log/widgets/pages/lists/operators_page.dart';
-import 'package:route_log/widgets/pages/vehicle_images.dart';
 import 'package:route_log/widgets/pages/lists/vehicle_types.dart';
 import 'package:route_log/widgets/util/liscence_plate.dart';
 import 'package:route_log/widgets/util/my_card.dart';
@@ -173,41 +172,7 @@ class _VehicleWidgetState extends State<VehicleWidget> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                PopupMenu(
-                  items: [
-                    (
-                      name: "Flickr (External)",
-                      callback: () {
-                        openUrl(
-                          "https://www.flickr.com/search/?text=${vehicle.reg}&sort=date-taken-desc",
-                        );
-                      },
-                      icon: Icons.link,
-                    ),
-                    (
-                      name: "Flickr (Internal)",
-                      callback: () {
-                        if (vehicle.reg == null) return;
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder:
-                                (context) => VehicleImages(tags: vehicle.reg!),
-                          ),
-                        );
-                      },
-                      icon: Icons.image,
-                    ),
-                    (
-                      name: "Google",
-                      callback: () {
-                        openUrl(
-                          "https://www.google.com/search?q=${vehicle.reg}",
-                        );
-                      },
-                      icon: Icons.search,
-                    ),
-                  ],
-                ),
+                PopupMenu(items: makeVehiclePopup(context, vehicle)),
               ],
             ),
           ],
